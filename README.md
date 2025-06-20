@@ -8,6 +8,8 @@
 
 Este projeto implementa um sistema de análise de risco de crédito utilizando Machine Learning, com interface web interativa e conexão com banco de dados MySQL. Desenvolvido para a disciplina AG02 do INATEL.
 
+Para ver o vídeo do projeto, [clique aqui](https://drive.google.com/drive/folders/1CaLZWdjq8f52Lo-HP6TR8R0iaAbFvwA_?usp=drive_link)
+
 ## 📁 Estrutura do Projeto
 
 ```
