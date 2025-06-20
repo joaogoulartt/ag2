@@ -12,7 +12,6 @@ try:
     import sys
     from pathlib import Path
 
-    # Adicionar o diretório src ao Python path
     src_path = Path(__file__).parent.parent
     if str(src_path) not in sys.path:
         sys.path.insert(0, str(src_path))
@@ -108,7 +107,6 @@ st.markdown(
 
 
 def load_model():
-    """Carrega e inicializa o modelo de risco de crédito."""
     if "model" not in st.session_state or "model_trained" not in st.session_state:
         try:
             load_dotenv()
@@ -148,7 +146,6 @@ def load_model():
 def create_prediction_form(model):
     st.subheader("🔮 Nova Predição de Risco")
 
-    # Adicionar casos de teste pré-definidos
     st.markdown("### 🧪 Casos de Teste Rápidos")
     col1, col2, col3 = st.columns(3)
 
@@ -157,12 +154,12 @@ def create_prediction_form(model):
             st.session_state.test_case = "Cliente Ideal"
 
     with col2:
-        if st.button("⚠️ Cliente de Risco", use_container_width=True):
-            st.session_state.test_case = "Cliente de Risco"
-
-    with col3:
         if st.button("📊 Cliente Médio", use_container_width=True):
             st.session_state.test_case = "Cliente Médio"
+
+    with col3:
+        if st.button("⚠️ Cliente de Risco", use_container_width=True):
+            st.session_state.test_case = "Cliente de Risco"
 
     st.markdown("---")
 
@@ -180,7 +177,6 @@ def create_prediction_form(model):
     cols = st.columns(3)
     user_input = []
 
-    # Verificar se há um caso de teste selecionado
     selected_values = {}
     if "test_case" in st.session_state and st.session_state.test_case in TEST_CASES:
         selected_values = TEST_CASES[st.session_state.test_case]["values"]
@@ -188,7 +184,6 @@ def create_prediction_form(model):
             f"📋 Usando valores do caso: **{st.session_state.test_case}** - {TEST_CASES[st.session_state.test_case]['description']}"
         )
 
-    # Usar apenas as features originais para entrada do usuário
     original_features = [
         "laufkont",
         "laufzeit",
@@ -220,16 +215,13 @@ def create_prediction_form(model):
         description = get_field_description(col_name)
 
         with cols[col_idx]:
-            # Mostrar o nome do campo com tooltip
             st.markdown(f"**{display_name}**")
             if description:
                 st.caption(f"💡 {description}")
 
             if is_numeric_field(col_name):
-                # Campo numérico
                 default_value = selected_values.get(col_name, 0)
                 if col_name == "laufzeit":
-                    # Garantir que o valor padrão não seja menor que o mínimo
                     safe_default = (
                         max(6, int(default_value)) if default_value > 0 else 12
                     )
@@ -242,7 +234,6 @@ def create_prediction_form(model):
                         help="Duração em meses (6 a 72 meses)",
                     )
                 elif col_name == "hoehe":
-                    # Garantir que o valor padrão não seja menor que o mínimo
                     safe_default = (
                         max(250, int(default_value)) if default_value > 0 else 1000
                     )
@@ -274,7 +265,6 @@ def create_prediction_form(model):
                         key=f"input_{col_name}",
                     )
             else:
-                # Campo categórico
                 options = get_field_options(col_name)
                 if options:
                     option_labels = [f"{k}: {v}" for k, v in options.items()]
@@ -295,7 +285,6 @@ def create_prediction_form(model):
                         index=default_index,
                         key=f"select_{col_name}",
                     )
-                    # Extrair o valor numérico da opção selecionada
                     value = int(selected_option.split(":")[0])
                 else:
                     value = st.number_input(
@@ -311,7 +300,6 @@ def create_prediction_form(model):
         if st.button("🚀 Analisar Risco de Crédito", type="primary"):
             try:
                 with st.spinner("🔮 Analisando perfil do cliente..."):
-                    # Criar DataFrame com as features originais
                     original_features = [
                         "laufkont",
                         "laufzeit",
@@ -336,18 +324,15 @@ def create_prediction_form(model):
                     ]
                     input_df = pd.DataFrame([user_input], columns=original_features)
 
-                    # Aplicar feature engineering
                     input_df = model.create_engineered_features(input_df)
 
-                    # Reorganizar colunas para corresponder ao modelo treinado
                     final_input = []
                     for col in model.columns:
                         if col in input_df.columns:
                             final_input.append(input_df[col].iloc[0])
                         else:
-                            final_input.append(0)  # Valor padrão para features ausentes
+                            final_input.append(0)
 
-                    # Fazer a predição
                     details = model.get_prediction_details(final_input)
                     result = details["prediction"]
                     prob_good = details["probability_good"]
@@ -395,13 +380,11 @@ def create_prediction_form(model):
                         unsafe_allow_html=True,
                     )
 
-                # Mostrar fatores de risco se existirem
                 if risk_factors:
                     st.subheader("⚠️ Fatores de Risco Identificados")
                     for factor in risk_factors:
                         st.warning(f"• {factor}")
 
-                # Gráfico de probabilidades
                 col1, col2 = st.columns(2)
                 with col1:
                     fig_prob = go.Figure(
@@ -420,7 +403,6 @@ def create_prediction_form(model):
                     )
                     st.plotly_chart(fig_prob, use_container_width=True)
 
-                # Mostrar resumo dos dados inseridos
                 st.subheader("📝 Resumo dos Dados Inseridos")
                 summary_data = []
                 for i, col_name in enumerate(original_features):
@@ -442,7 +424,6 @@ def create_prediction_form(model):
                 st.error(f"❌ Erro na predição: {e}")
                 st.error("Tente novamente ou verifique os dados inseridos.")
 
-    # Limpar caso de teste após uso
     if st.button("🔄 Limpar Formulário"):
         for key in st.session_state.keys():
             if key.startswith(("input_", "select_", "number_", "test_case")):
@@ -451,7 +432,6 @@ def create_prediction_form(model):
 
 
 def show_model_performance():
-    """Exibe métricas de performance do modelo."""
     if "model_accuracy" in st.session_state:
         st.subheader("📈 Performance do Modelo")
 
@@ -495,7 +475,6 @@ def show_model_performance():
 
 
 def show_data_overview():
-    """Exibe overview dos dados."""
     if "model" in st.session_state:
         st.subheader("📊 Visão Geral dos Dados")
 
@@ -530,8 +509,6 @@ def show_data_overview():
 
 
 def main():
-    """Função principal da aplicação."""
-
     st.markdown(
         '<h1 class="main-header">💳 Análise de Risco de Crédito</h1>',
         unsafe_allow_html=True,

@@ -1,21 +1,16 @@
 import pandas as pd
-import numpy as np
 from sqlalchemy import create_engine, exc
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import (
     accuracy_score,
     confusion_matrix,
-    classification_report,
     roc_auc_score,
 )
 import logging
 import os
 from urllib.parse import quote_plus
 from dotenv import load_dotenv
-import warnings
-
-warnings.filterwarnings("ignore")
 
 
 class CreditRiskModel:
@@ -142,24 +137,12 @@ class CreditRiskModel:
         cm = confusion_matrix(y_test, y_pred)
         tn, fp, fn, tp = cm.ravel()
 
-        # Calcular métricas detalhadas
         precision_bad = tp / (tp + fp) if (tp + fp) > 0 else 0
         recall_bad = tp / (tp + fn) if (tp + fn) > 0 else 0
-        f1_bad = (
-            2 * (precision_bad * recall_bad) / (precision_bad + recall_bad)
-            if (precision_bad + recall_bad) > 0
-            else 0
-        )
 
         precision_good = tn / (tn + fn) if (tn + fn) > 0 else 0
         recall_good = tn / (tn + fp) if (tn + fp) > 0 else 0
-        f1_good = (
-            2 * (precision_good * recall_good) / (precision_good + recall_good)
-            if (precision_good + recall_good) > 0
-            else 0
-        )
 
-        # Métricas de negócio
         total_predictions = len(y_test)
         bad_clients_detected = tp
         good_clients_approved = tn
@@ -212,7 +195,6 @@ class CreditRiskModel:
 
         print("═" * 80)
 
-        # Log das métricas
         self.logger.info(
             f"Modelo avaliado - Acurácia: {accuracy:.3f}, ROC-AUC: {roc_auc:.3f}"
         )
