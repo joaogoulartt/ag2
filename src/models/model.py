@@ -139,42 +139,83 @@ class CreditRiskModel:
 
         accuracy = accuracy_score(y_test, y_pred)
         roc_auc = roc_auc_score(y_test, y_prob)
-
-        print("================ Avaliação do Modelo ===============")
-        print(f"Acurácia: {accuracy:.3f}")
-        print(f"ROC-AUC: {roc_auc:.3f}")
-        print("\nMatriz de Confusão:")
         cm = confusion_matrix(y_test, y_pred)
-        print(cm)
-
         tn, fp, fn, tp = cm.ravel()
+
+        # Calcular métricas detalhadas
         precision_bad = tp / (tp + fp) if (tp + fp) > 0 else 0
         recall_bad = tp / (tp + fn) if (tp + fn) > 0 else 0
+        f1_bad = (
+            2 * (precision_bad * recall_bad) / (precision_bad + recall_bad)
+            if (precision_bad + recall_bad) > 0
+            else 0
+        )
+
         precision_good = tn / (tn + fn) if (tn + fn) > 0 else 0
         recall_good = tn / (tn + fp) if (tn + fp) > 0 else 0
-
-        print(f"\nMétricas para Clientes RUINS (classe 0):")
-        print(
-            f"Precisão: {precision_bad:.3f} (dos preditos como ruins, quantos eram realmente ruins)"
-        )
-        print(
-            f"Recall: {recall_bad:.3f} (dos realmente ruins, quantos foram detectados)"
+        f1_good = (
+            2 * (precision_good * recall_good) / (precision_good + recall_good)
+            if (precision_good + recall_good) > 0
+            else 0
         )
 
-        print(f"\nMétricas para Clientes BONS (classe 1):")
+        # Métricas de negócio
+        total_predictions = len(y_test)
+        bad_clients_detected = tp
+        good_clients_approved = tn
+        false_approvals = fp
+        false_rejections = fn
+
+        print("═" * 80)
+        print("                      AVALIAÇÃO DO MODELO                        ")
+        print("═" * 80)
+
+        print(f"\nMÉTRICAS GERAIS:")
+        print(f"   • Acurácia Geral: {accuracy:.1%}")
+        print(f"   • ROC-AUC Score:  {roc_auc:.3f}")
+        print(f"   • Total de Testes: {total_predictions:,} clientes")
+
+        print(f"\nMATRIZ DE CONFUSÃO:")
+        print(f"                    Predição")
+        print(f"           ┌─────────┬─────────┐")
+        print(f"   Real    │  Bom    │  Ruim   │")
+        print(f"   ────────┼─────────┼─────────┤")
+        print(f"   Bom     │  {tn:4d}   │  {fn:4d}   │")
+        print(f"   Ruim    │  {fp:4d}   │  {tp:4d}   │")
+        print(f"           └─────────┴─────────┘")
+
+        print(f"\nIMPACTO NO NEGÓCIO:")
         print(
-            f"Precisão: {precision_good:.3f} (dos preditos como bons, quantos eram realmente bons)"
+            f"   - Clientes Bons Aprovados:     {good_clients_approved:4d} ({good_clients_approved/total_predictions:.1%})"
         )
         print(
-            f"Recall: {recall_good:.3f} (dos realmente bons, quantos foram detectados)"
+            f"   - Clientes Ruins Detectados:   {bad_clients_detected:4d} ({bad_clients_detected/total_predictions:.1%})"
+        )
+        print(
+            f"   - Clientes Ruins Aprovados:    {false_approvals:4d} ({false_approvals/total_predictions:.1%}) - RISCO!"
+        )
+        print(
+            f"   - Clientes Bons Rejeitados:    {false_rejections:4d} ({false_rejections/total_predictions:.1%}) - Oportunidade Perdida"
         )
 
-        print("\nRelatório de Classificação:")
-        print(classification_report(y_test, y_pred, target_names=["Ruim", "Bom"]))
+        print(f"\nINTERPRETAÇÃO:")
+        print(
+            f"   - Precisão Bons: {precision_good:.1%} dos aprovados são realmente bons clientes"
+        )
+        print(f"   - Recall Bons: {recall_good:.1%} dos bons clientes foram aprovados")
+        print(
+            f"   - Precisão Ruins: {precision_bad:.1%} dos rejeitados são realmente ruins"
+        )
+        print(
+            f"   - Recall Ruins: {recall_bad:.1%} dos clientes ruins foram detectados"
+        )
 
-        if self.feature_importance is not None:
-            print("\nTop 10 Features Mais Importantes:")
-            print(self.feature_importance.head(10).to_string(index=False))
+        print("═" * 80)
+
+        # Log das métricas
+        self.logger.info(
+            f"Modelo avaliado - Acurácia: {accuracy:.3f}, ROC-AUC: {roc_auc:.3f}"
+        )
 
         return accuracy
 
