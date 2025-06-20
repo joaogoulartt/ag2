@@ -1,99 +1,147 @@
-# AG2 – Engenharias de Computação e Software
+# AG2 – Análise de Risco de Crédito
+*Engenharias de Computação e Software - INATEL*
 
-Este projeto implementa um modelo de Machine Learning para análise de risco de crédito usando dados do banco MySQL para a matéria de AG02 do Inatel.
+![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
+![Streamlit](https://img.shields.io/badge/Streamlit-1.28+-red.svg)
+![MySQL](https://img.shields.io/badge/MySQL-8.0+-orange.svg)
+![Scikit-learn](https://img.shields.io/badge/Scikit--learn-1.3+-green.svg)
+
+Este projeto implementa um sistema de análise de risco de crédito utilizando Machine Learning, com interface web interativa e conexão com banco de dados MySQL. Desenvolvido para a disciplina AG02 do INATEL.
+
+## 📁 Estrutura do Projeto
+
+```
+ag02/
+├── src/
+│   ├── app/
+│   │   └── app.py              # Interface web Streamlit
+│   ├── models/
+│   │   └── model.py            # Modelo de Machine Learning
+│   └── utils/
+│       └── translations.py     # Traduções e mapeamentos
+├── scripts/
+│   └── run_app.sh             # Script de execução
+├── .env.example               # Exemplo de configuração
+├── requirements.txt           # Dependências Python
+└── README.md                  # Este arquivo
+```
 
 ## 🚀 Início Rápido
 
-### 1. Interface Web (Recomendado) 🌐
-A aplicação possui uma interface web moderna e intuitiva desenvolvida com Streamlit:
+### Pré-requisitos
+- Python 3.8 ou superior
+- MySQL Server 8.0+
+- Git
+
+### 1. Clonagem e Configuração Inicial
 
 ```bash
+# Clonar o repositório
+git clone <url-do-repositorio>
+cd ag02
+
+# Criar ambiente virtual (recomendado)
+python -m venv .venv
+source .venv/bin/activate  # Linux/Mac
+# ou
+.venv\Scripts\activate     # Windows
+
 # Instalar dependências
 pip install -r requirements.txt
-
-# Executar a aplicação web
-streamlit run app.py
-# ou usar o script helper
-./run_app.sh
 ```
 
-**Funcionalidades da Interface Web:**
-- 🏠 **Dashboard**: Visualização de métricas e performance do modelo
-- 🔮 **Nova Predição**: Interface para análise de novos clientes
-- 📊 **Dados**: Exploração e visualização dos dados
-- ⚙️ **Configurações**: Gerenciamento do sistema
-
-### 2. Executar apenas o Modelo (Terminal)
-```bash
-python main.py
-```
-
-## 📋 Configuração Manual
-
-### 1. Instalar Dependências
+### 2. Configuração do Banco de Dados
 
 ```bash
-pip install -r requirements.txt
-```
-
-### 2. Configurar Credenciais
-
-Copie o arquivo `.env.example` para `.env` e configure suas credenciais:
-
-```bash
+# Copiar arquivo de configuração
 cp .env.example .env
+
+# Editar arquivo .env com suas credenciais
+nano .env  # ou vim .env
 ```
 
-Edite o arquivo `.env` com suas credenciais reais
+### 3. Executar a Aplicação
 
-## 🖥️ Interface Web
+#### Opção 1: Interface Web (Recomendado) 🌐
+```bash
+# Usar script auxiliar
+chmod +x scripts/run_app.sh
+./scripts/run_app.sh
 
-A aplicação Streamlit possui uma interface moderna e intuitiva com:
+# Ou executar diretamente
+streamlit run src/app/app.py
+```
 
-### 🧪 **Casos de Teste**
-- Perfis pré-definidos de clientes
-- Testes rápidos do modelo
-- Visualização imediata dos resultados
+#### Opção 2: Apenas o Modelo (Terminal)
+```bash
+python src/models/model.py
+```
 
-### 👤 **Análise Personalizada**
-- Formulário completo para novos clientes
-- Entrada de dados com validação
-- Predição em tempo real
+## 🌐 Interface Web
 
-### 📈 **Análise do Modelo**
-- Métricas de performance
-- Gráfico de importância das features
+### 📊 **Páginas Principais**
+
+#### 🏠 **Dashboard**
+- Métricas de performance do modelo em tempo real
+- Gráficos de análise de dados
+- Estatísticas gerais do dataset
+- Indicadores de saúde do sistema
+
+#### 🔮 **Nova Predição**
+- **Casos de Teste**: Perfis pré-definidos para teste rápido
+- **Análise Personalizada**: Formulário completo para novos clientes
+- **Resultados Visuais**: Predições com explicabilidade
+- **Validação de Entrada**: Verificação automática dos dados
+
+#### 📈 **Análise do Modelo**
 - Matriz de confusão interativa
+- Gráfico de importância das features
+- Métricas detalhadas (Accuracy, Precision, Recall, F1-Score)
+- Curvas ROC e análise de performance
 
-### 📋 **Documentação**
-- Informações sobre o German Credit Dataset
-- Descrição detalhada das variáveis
-- Contexto do problema de negócio
+## ⚙️ Tecnologias Utilizadas
 
-## 📈 Funcionalidades
+### **Backend & Machine Learning**
+- **Python 3.8+**: Linguagem principal
+- **Scikit-learn**: Algoritmos de Machine Learning
+- **Pandas**: Manipulação e análise de dados
+- **MySQL Connector**: Conexão com banco de dados
+- **SQLAlchemy**: ORM para Python
+- **Python-dotenv**: Gerenciamento de variáveis de ambiente
 
-- ✅ Interface web moderna com Streamlit
-- ✅ Carregamento automático de dados do MySQL
-- ✅ Treinamento de modelo de Árvore de Decisão
-- ✅ Avaliação de performance do modelo
-- ✅ Análise visual com gráficos Plotly
-- ✅ Casos de teste pré-configurados
-- ✅ Formulário interativo para novos clientes
-- ✅ Sistema de logging e monitoramento
-- ✅ Configuração segura via variáveis de ambiente
+### **Frontend & Visualização**
+- **Streamlit**: Framework para aplicações web
+- **Plotly**: Gráficos interativos
+- **CSS Customizado**: Estilização da interface
 
-## 🎯 Como Usar
+### **Banco de Dados**
+- **MySQL 8.0+**: Sistema de gerenciamento de banco
+- **German Credit Dataset**: Dataset para análise de crédito
 
-1. **Configure o banco MySQL** com suas credenciais no arquivo `.env`
-2. **Execute a aplicação**: `streamlit run app.py`
-3. **Acesse** `http://localhost:8501` no seu navegador
-4. **Teste** os casos pré-definidos ou crie análises personalizadas
 
-## 📱 Screenshots
+## 🎯 Guia de Uso
 
-A interface possui:
-- **Design moderno** com gradientes e cores visuais
-- **Métricas em tempo real** do modelo
-- **Gráficos interativos** para análise
-- **Formulários intuitivos** para entrada de dados
-- **Resultados visuais** das predições
+1. Configure o ambiente virtual Python
+2. Instale as dependências do `requirements.txt`
+3. Configure as credenciais do MySQL no `.env`
+4. Execute a aplicação com `streamlit run src/app/app.py` ou `./scripts/run_app.sh`
+
+## 🛠️ Desenvolvimento
+
+### **Estrutura de Arquivos**
+- `src/app/app.py`: Interface principal Streamlit
+- `src/models/model.py`: Lógica do modelo ML
+- `src/utils/translations.py`: Sistema de traduções
+- `scripts/run_app.sh`: Script de execução automatizada
+
+## 📊 Dataset German Credit
+
+O projeto utiliza o German Credit Dataset que contém:
+- **1000 registros** de clientes
+- **20 atributos** (características financeiras e pessoais)
+- **Variável target**: Risco de crédito (Bom/Ruim)
+- **Aplicação real**: Análise de concessão de crédito bancário
+
+---
+
+**Desenvolvido por:** João Victor de Oliveira Goulart Costa

@@ -10,4 +10,11 @@ echo ""
 echo "🌐 A aplicação será aberta no navegador em http://localhost:8501"
 echo ""
 
-streamlit run app.py
+# Navegar para o diretório raiz do projeto
+cd "$(dirname "$0")/.."
+
+# Adicionar o diretório src ao PYTHONPATH
+export PYTHONPATH="${PYTHONPATH}:$(pwd)/src"
+
+# Executar a aplicação Streamlit
+streamlit run src/app/app.py

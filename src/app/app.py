@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-"""
-Aplicação Web para Análise de Risco de Crédito
-Interface criada com Streamlit para interação com o modelo de Machine Learning
-"""
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -15,13 +9,18 @@ from datetime import datetime
 logging.basicConfig(level=logging.INFO)
 
 try:
-    from main import CreditRiskModel
+    import sys
+    from pathlib import Path
+
+    # Adicionar o diretório src ao Python path
+    src_path = Path(__file__).parent.parent
+    if str(src_path) not in sys.path:
+        sys.path.insert(0, str(src_path))
+
+    from models.model import CreditRiskModel
     from dotenv import load_dotenv
     from sklearn.metrics import accuracy_score
-    from translations import (
-        FIELD_DISPLAY_NAMES,
-        FIELD_VALUES,
-        FIELD_DESCRIPTIONS,
+    from utils.translations import (
         TEST_CASES,
         get_field_display_name,
         get_field_description,
